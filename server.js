@@ -32,6 +32,29 @@ var server = http.createServer(function (request, response) {
     request.on("end", () => {
       const string = Buffer.concat(array).toString();
       const obj = JSON.parse(string);
+      const user = usersArray.find(
+        (user) => user.name === obj.name && user.password === obj.password
+      );
+      if (user === undefined) {
+        response.statusCode = 400;
+        response.end("name password 不匹配");
+      } else {
+        response.statusCode = 200;
+        response.end();
+      }
+    });
+  } else if (path === "./home") {
+    //不知道写什么
+  } else if (path === "/register" && method === "POST") {
+    response.setHeader("Content-Type", "text/html;charset = utf-8");
+    const usersArray = JSON.parse(fs.readFileSync("./db/users.json"));
+    const array = [];
+    request.on("data", (chunk) => {
+      array.push(chunk);
+    });
+    request.on("end", () => {
+      const string = Buffer.concat(array).toString();
+      const obj = JSON.parse(string);
       const lastUser = usersArray[usersArray.length - 1];
       const newUser = {
         id: lastUser ? lastUser.id + 1 : 1,
